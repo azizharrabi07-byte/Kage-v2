@@ -432,14 +432,14 @@ export default function App() {
           onMouseMove={handleGlobalMouseMove}
           onMouseLeave={handleGlobalMouseLeave}
           className={`flex-1 overflow-y-auto no-scrollbar pt-6 md:pt-10 pb-20 px-4 relative z-25 flex flex-col transition-all duration-500 ease-in-out ${
-          landingTheme === 'parchment'
+          landingTheme === 'parchment' && currentTab === '家'
             ? 'bg-[#EAE4D7] text-stone-900 shadow-inner'
-            : 'bg-void/90 text-light'
+            : 'bg-[#050505] text-white'
         }`}>
           
           {/* ======================= TAB 1: HOME (家) ======================= */}
           {currentTab === '家' && (
-            <div className="space-y-6 flex-1 flex flex-col justify-start relative">
+            <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: "easeOut" }} className="space-y-6 flex-1 flex flex-col justify-start relative">
               
               {/* HUGE FULL-BLEED DESIGN HERO FROM THE ACTUAL UPLOADED PHOTOS */}
               <div className="absolute inset-x-[-16px] top-[-24px] md:top-[-40px] pointer-events-none select-none z-0 overflow-hidden h-[500px]">
@@ -927,13 +927,13 @@ export default function App() {
                 </div>
               </div>
 
-            </div>
+            </motion.div>
           )}
 
 
           {/* ======================= TAB 2: TRAIN (武) ======================= */}
           {currentTab === '武' && (
-            <div className="space-y-6 pt-2">
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: "easeOut" }} className="space-y-6 pt-2">
               
               <div className="text-center py-2 flex justify-between items-center border-b border-white/5 pb-4">
                 <div className="flex items-center gap-2">
@@ -1169,13 +1169,13 @@ export default function App() {
 
               </div>
 
-            </div>
+            </motion.div>
           )}
 
 
           {/* ======================= TAB 3: DOJO (道) ======================= */}
           {currentTab === '道' && (
-            <div className="space-y-6 pt-2">
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: "easeOut" }} className="space-y-6 pt-2">
               
               <div className="text-center py-2 flex justify-between items-center border-b border-white/5 pb-4">
                 <div className="flex items-center gap-2">
@@ -1311,13 +1311,13 @@ export default function App() {
                 </div>
               </div>
 
-            </div>
+            </motion.div>
           )}
 
 
           {/* ======================= TAB 4: SENSEI (先) ======================= */}
           {currentTab === '先' && (
-            <div className="flex-1 flex flex-col h-full space-y-4 pt-2">
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: "easeOut" }} className="flex-1 flex flex-col h-full space-y-4 pt-2">
               
               <div className="text-center py-2 flex justify-between items-center border-b border-white/5 pb-4">
                 <div className="flex items-center gap-2">
@@ -1454,13 +1454,13 @@ export default function App() {
                 </button>
               </div>
 
-            </div>
+            </motion.div>
           )}
 
 
           {/* ======================= TAB 5: EVOLVE (异) ======================= */}
           {currentTab === '异' && (
-            <div className="space-y-6 pt-2">
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: "easeOut" }} className="space-y-6 pt-2">
               
               <div className="text-center py-2 flex justify-between items-center border-b border-white/5 pb-4">
                 <div className="flex items-center gap-2">
@@ -1656,13 +1656,13 @@ export default function App() {
                 </div>
               </div>
 
-            </div>
+            </motion.div>
           )}
 
 
           {/* ======================= TAB 6: SOUL (魂) ======================= */}
           {currentTab === '魂' && (
-            <div className="space-y-6 pt-2">
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: "easeOut" }} className="space-y-6 pt-2">
               
               <div className="text-center py-2 flex justify-between items-center border-b border-white/5 pb-4">
                 <div className="flex items-center gap-2">
@@ -1785,7 +1785,7 @@ export default function App() {
                 </div>
               </div>
 
-            </div>
+            </motion.div>
           )}
 
         </div>
@@ -1794,7 +1794,7 @@ export default function App() {
         {/* ========================================================================================= */}
         {/* ======================= BOTTOM TAB BAR DIAL (漆黒 LACQUER BLACK) ======================= */}
         {/* ========================================================================================= */}
-        <nav className="absolute bottom-0 left-0 right-0 h-18 bg-lacquer-black border-t border-white/5 px-2 flex justify-around items-center z-30">
+        <nav className="absolute bottom-0 left-0 right-0 h-20 pb-2 bg-lacquer-black border-t border-white/5 px-2 flex justify-around items-center z-30">
           {(['家', '武', '道', '先', '异', '魂'] as TabName[]).map((tab) => {
             const isActive = currentTab === tab;
             return (
