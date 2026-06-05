@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react';
 import { 
   Flame, 
   Shield, 
@@ -228,6 +229,33 @@ export default function App() {
   ];
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
+  // 3D Parallax Mouse Tracking for Premium Hero Image
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  const springConfig = { damping: 25, stiffness: 120, mass: 0.5 };
+  const smoothMouseX = useSpring(mouseX, springConfig);
+  const smoothMouseY = useSpring(mouseY, springConfig);
+  const imageScale = 1.05; 
+  const xTransform = useTransform(smoothMouseX, [0, 1], ["-2%", "2%"]);
+  const yTransform = useTransform(smoothMouseY, [0, 1], ["-2%", "2%"]);
+  const floatX = useTransform(smoothMouseX, [0, 1], ["10px", "-10px"]);
+  const floatY = useTransform(smoothMouseY, [0, 1], ["10px", "-10px"]);
+  
+  const handleGlobalMouseMove = (e: React.MouseEvent) => {
+    if (currentTab !== '家') return;
+    const { clientX, clientY, currentTarget } = e;
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    const x = (clientX - left) / width;
+    const y = (clientY - top) / height;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleGlobalMouseLeave = () => {
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
+
   // Battle cry timer simulated countdown
   useEffect(() => {
     const interval = setInterval(() => {
@@ -400,7 +428,10 @@ export default function App() {
         </div>
 
         {/* Screen/Tab Canvas */}
-        <div className={`flex-1 overflow-y-auto no-scrollbar pt-6 md:pt-10 pb-20 px-4 relative z-25 flex flex-col transition-all duration-500 ease-in-out ${
+        <div 
+          onMouseMove={handleGlobalMouseMove}
+          onMouseLeave={handleGlobalMouseLeave}
+          className={`flex-1 overflow-y-auto no-scrollbar pt-6 md:pt-10 pb-20 px-4 relative z-25 flex flex-col transition-all duration-500 ease-in-out ${
           landingTheme === 'parchment'
             ? 'bg-[#EAE4D7] text-stone-900 shadow-inner'
             : 'bg-void/90 text-light'
@@ -408,59 +439,37 @@ export default function App() {
           
           {/* ======================= TAB 1: HOME (家) ======================= */}
           {currentTab === '家' && (
-            <div className="space-y-6 flex-1 flex flex-col justify-between pt-4 relative">
+            <div className="space-y-6 flex-1 flex flex-col justify-start relative">
               
-              {/* Dynamic Design Watermarks direct from user references */}
-              {landingTheme === 'parchment' ? (
-                // Vintage Miyamoto Parchment Watermarks (Ref 1)
-                <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
-                  {/* Subtle paper grain and wrinkles */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-stone-900/[0.01] to-stone-900/[0.04] mix-blend-multiply" />
-                  {/* Large Red Sun watermark on top right */}
-                  <div className="absolute top-[8%] -right-[24px] w-48 h-48 rounded-full bg-rose-600/10 border border-rose-600/5" />
-                  
-                  {/* Vertical Calligraphy "宮本武蔵" right-aligned */}
-                  <div className="absolute right-4 top-[15%] flex flex-col items-center gap-1 font-kanji text-2xl font-black text-rose-800/20 leading-none">
-                    <span>宮</span>
-                    <span>本</span>
-                    <span>武</span>
-                    <span>蔵</span>
-                  </div>
+              {/* HUGE FULL-BLEED DESIGN HERO FROM THE ACTUAL UPLOADED PHOTOS */}
+              <div className="absolute inset-x-[-16px] top-[-24px] md:top-[-40px] pointer-events-none select-none z-0 overflow-hidden h-[500px]">
+                {landingTheme === 'parchment' ? (
+                  <>
+                    <motion.img 
+                      src={IMAGES.warriorHelmet} 
+                      className="w-full h-full object-cover object-top shadow-inner brightness-105 contrast-125" 
+                      style={{ scale: imageScale, x: xTransform, y: yTransform }}
+                      alt="Miyamoto Musashi Poster" 
+                    />
+                    {/* Subtle fade so the UI cards below read clearly */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#EAE4D7]/40 to-[#EAE4D7]" />
+                  </>
+                ) : (
+                  <>
+                    <motion.img 
+                      src={IMAGES.bgSamurai} 
+                      className="w-full h-full object-cover object-top filter contrast-[1.1] saturate-150" 
+                      style={{ scale: imageScale, x: xTransform, y: yTransform }}
+                      alt="Cyber Kage Samurai" 
+                    />
+                    {/* Dark gradient fade for the deep void look */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-void/50 to-void pt-20" />
+                  </>
+                )}
+              </div>
 
-                  {/* Vertical Japanese Label left-aligned "宮本" */}
-                  <div className="absolute left-4 top-[10%] flex flex-col items-center gap-1 font-kanji text-lg font-bold text-stone-900/15 leading-none">
-                    <span>宮</span>
-                    <span>本</span>
-                  </div>
-
-                  {/* Bottom Vintage Barcode & Stamp */}
-                  <div className="absolute bottom-6 left-6 flex items-center gap-2 opacity-30 text-stone-800">
-                    <span className="font-mono text-[7px] rotate-90 outline-none">||||| ||| | ||| 89201</span>
-                    <div className="w-8 h-8 rounded border border-rose-700/60 flex items-center justify-center font-kanji font-black text-rose-700 text-[10px] rotate-12">
-                      斬龍
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                // Dark KAGE Crimson Red Sun Watermarks (Ref 2)
-                <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
-                  {/* Giant neon red sun backdrop */}
-                  <div className="absolute top-[12%] -right-[50px] w-64 h-64 rounded-full bg-rose-600/15 blur-[2px] animate-pulse" />
-                  
-                  {/* Mega-sized calligraphic background "影" (KAGE / SHADOW) */}
-                  <div className="absolute left-[-20px] top-[14%] font-kanji text-[140px] font-black text-rose-500/10 leading-none tracking-normal rotate-3 animate-pulse">
-                    影
-                  </div>
-
-                  {/* Ink splatter simulated particles */}
-                  <div className="absolute top-1/3 left-10 w-1.5 h-1.5 rounded-full bg-rose-500/20 animate-ping duration-1000" />
-                  <div className="absolute top-1/4 right-1/4 w-1 h-1 rounded-full bg-rose-500/40 animate-pulse duration-2000" />
-                  <div className="absolute top-[60%] left-1/3 w-2 h-2 rounded-full bg-rose-500/10" />
-                </div>
-              )}
-
-              {/* Premium Design Showroom Pill Toggle */}
-              <div className="flex justify-center z-30 pointer-events-auto relative mt-2">
+              {/* Premium Design Showroom Pill Toggle - Positioned over the hero image */}
+              <motion.div style={{ x: floatX, y: floatY }} className="flex justify-center z-30 pointer-events-auto relative mt-2">
                 <div className="bg-neutral-900/40 border border-white/5 p-1 rounded-full flex gap-1 text-[10px] font-mono shadow-lg backdrop-blur-md">
                   <button
                     onClick={() => {
@@ -469,12 +478,12 @@ export default function App() {
                     }}
                     className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 font-bold ${
                       landingTheme === 'red-sun'
-                        ? 'bg-rose-600/20 text-rose-400 border border-rose-500/30 shadow-[0_0_8px_rgba(255,59,48,0.25)]'
+                        ? 'bg-rose-600/60 text-white border border-rose-500/50 shadow-[0_0_12px_rgba(255,59,48,0.4)]'
                         : 'text-zinc-400 hover:text-white border border-transparent'
                     }`}
                   >
                     <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                    影 RED SUN (DARK)
+                    影 PROJECT RED SUN
                   </button>
                   <button
                     onClick={() => {
@@ -483,61 +492,41 @@ export default function App() {
                     }}
                     className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 font-bold ${
                       landingTheme === 'parchment'
-                        ? 'bg-stone-800 text-[#EAE4D7] border border-stone-800 shadow-[0_2px_6px_rgba(193,39,45,0.15)]'
+                        ? 'bg-stone-800/80 text-[#EAE4D7] border border-stone-800 shadow-[0_2px_6px_rgba(0,0,0,0.5)]'
                         : 'text-zinc-400 hover:text-white border border-transparent'
                     }`}
                   >
-                    <div className="w-1.5 h-1.5 rounded-full bg-rose-700/60" />
-                    墨 PARCHMENT (LIGHT)
+                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300/80" />
+                    墨 PARCHMENT SUMI-E
                   </button>
                 </div>
-              </div>
+              </motion.div>
 
-              {/* KAGE Logotype with Dynamic Style Pairings */}
-              <div 
-                className="text-center py-4 flex flex-col items-center pointer-events-auto z-10"
+              {/* KAGE Logotype over the image */}
+              <motion.div 
+                style={{ x: floatX, y: floatY }} 
+                className="text-center py-4 flex flex-col items-center pointer-events-auto z-10 mt-[120px]"
                 onClick={() => soundSafe('tap')}
               >
-                <div className="relative w-24 h-24 mb-3">
-                  <div className={`absolute inset-0 rounded-full blur-lg animate-pulse ${landingTheme === 'parchment' ? 'bg-rose-600/10' : 'bg-rose-500/35'}`} />
-                  <img 
-                    src={IMAGES.warriorHelmet} 
-                    className={`w-full h-full object-cover rounded-2xl border transition-all duration-300 transform hover:scale-105 ${
-                      landingTheme === 'parchment' 
-                        ? 'border-stone-400 shadow-[0_4px_15px_rgba(0,0,0,0.1)] bg-[#D3C9B3]' 
-                        : 'border-rose-500/30 shadow-[0_0_20px_rgba(255,59,48,0.5)] bg-kachi'
-                    }`} 
-                    alt="KAGE Helmet" 
-                  />
-                  {landingTheme === 'parchment' && (
-                    <div className="absolute -bottom-1 -right-1 px-1 py-0.5 bg-rose-600 text-white text-[7px] font-bold rounded shadow font-mono">SAMURAI</div>
-                  )}
+                <div className="flex items-center gap-2 mb-2 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+                  <span className={`font-kanji font-black text-xs tracking-widest ${landingTheme === 'parchment' ? 'text-rose-400' : 'text-rose-500'}`}>家庭</span>
+                  <div className={`w-1 h-1 rounded-full ${landingTheme === 'parchment' ? 'bg-rose-400' : 'bg-rose-500'}`} />
+                  <span className={`text-[9px] tracking-widest font-mono uppercase text-white/80`}>V2 PREMIUM DOJO</span>
                 </div>
-                <h1 className={`font-display font-black text-6xl tracking-widest leading-none drop-shadow-sm transition-all ${
-                  landingTheme === 'parchment'
-                    ? 'text-stone-900 bg-none'
-                    : 'text-transparent bg-clip-text bg-gradient-to-b from-white via-[#E0E0E0] to-neutral-400 drop-shadow-[0_4px_10px_rgba(255,59,48,0.3)] animate-pulse inline-block'
-                }`}>
-                  KAGE
-                </h1>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className={`font-kanji font-black text-lg tracking-widest ${landingTheme === 'parchment' ? 'text-rose-700' : 'text-rose-500'}`}>家庭</span>
-                  <div className={`w-1.5 h-1.5 rounded-full ${landingTheme === 'parchment' ? 'bg-rose-700' : 'bg-rose-500'}`} />
-                  <span className={`text-[10px] tracking-widest font-mono uppercase ${landingTheme === 'parchment' ? 'text-stone-600' : 'text-zinc-400'}`}>V2 PREMIUM DOJO</span>
-                </div>
-              </div>
+              </motion.div>
 
-              {/* STREAK FLAME BANNER */}
-              <ThreeDCard 
-                isLight={landingTheme === 'parchment'}
-                glowColor="rgba(232, 122, 93, 0.3)" 
-                className={`relative overflow-hidden flex items-center justify-between pointer-events-auto transition-all ${
-                  landingTheme === 'parchment' 
-                    ? 'bg-[#E5DFD0] border-stone-300' 
-                    : 'bg-gradient-to-br from-sumi via-kachi to-void'
-                }`}
-                onClick={() => {
-                  soundSafe('tap');
+              {/* STREAK FLAME BANNER (Pushed down below the main hero visual) */}
+              <div className="relative z-10 mt-[80px] space-y-4">
+                <ThreeDCard 
+                  isLight={landingTheme === 'parchment'}
+                  glowColor="rgba(232, 122, 93, 0.3)" 
+                  className={`relative overflow-hidden flex items-center justify-between pointer-events-auto transition-all ${
+                    landingTheme === 'parchment' 
+                      ? 'bg-[#E5DFD0] border-stone-300' 
+                      : 'bg-gradient-to-br from-sumi via-kachi to-void'
+                  }`}
+                  onClick={() => {
+                    soundSafe('tap');
                   setStreak(prev => prev + 1);
                 }}
               >
@@ -703,6 +692,7 @@ export default function App() {
                   </div>
                 </ThreeDCard>
               </div>
+            </div>
 
               {/* =========================================================================================
                   AUTHENTIC JAPANESE POSTER DESIGN SHOWROOM & INTERACTIVE MASTERCLASS
