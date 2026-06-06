@@ -1,29 +1,26 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "baseUrl": ".",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "target": "esnext",
-    "jsx": "react-native",
+    "target": "ES2022",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "module": "ESNext",
     "lib": [
-      "es2022"
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
     ],
-    "allowJs": true,
     "skipLibCheck": true,
-    "noEmit": true,
-    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
     "isolatedModules": true,
-    "esModuleInterop": true,
+    "moduleDetection": "force",
+    "allowJs": true,
+    "jsx": "react-jsx",
     "paths": {
       "@/*": [
-        "src/*"
+        "./*"
       ]
-    }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "extends": "expo/tsconfig.base"
+    },
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  }
 }
