@@ -1,0 +1,109 @@
+kage_v2_design
+
+==================================================
+KAGE V2: PREMIUM SAMURAI DESIGN ARCHITECTURE
+==================================================
+This document contains the core principles, image URLs, code structure, and tutorials for replicating the "Kage V2" premium interactive design.
+
+--------------------------------------------------
+1. DEPLOYING TO GITHUB (FASTEST WAY)
+--------------------------------------------------
+Since you are using Google AI Studio, the easiest and best way to get your entire project (with all 2400+ lines of code and images) into GitHub is:
+
+1. Look at the top right corner of your AI Studio interface.
+2. Click the gear/settings icon.
+3. Select "Push to GitHub" or "Export as ZIP".
+4. If you chose GitHub, authenticate and it will create a new repository automatically.
+5. All your App.tsx, Tailwind configs, and images will be safely inside!
+
+--------------------------------------------------
+2. ASSET URLs (From your uploaded files)
+--------------------------------------------------
+The images you provided are stored locally in the src/assets/images/ directory:
+1. Warrior Helmet (Parchment ref): src/assets/images/warrior_helmet_1780673081824.png
+2. Cyber Samurai (Dark Neon ref): src/assets/images/bg_samurai_1780673054908.png
+3. Hologram Sensei (Profile): src/assets/images/hologram_sensei_1780673069157.png
+
+If you deploy to Vercel/GitHub Pages, these relative paths will work automatically.
+
+--------------------------------------------------
+3. THE 4 PILLARS OF MODERN JAPANESE POSTER UI
+--------------------------------------------------
+To build premium UI like the ones generated here, you must master these rules:
+
+PILLAR A: THE ANCHOR SUN (日章 Nissho)
+Use a perfectly solid, vibrant red circle (rgb(227, 30, 36)) situated off-center or behind the main subject. This anchors the observer's gaze and creates instant thematic recognition. Ensure the background behind the sun is either absolute void (pure black) or textured parchment (#EAE4D7) to let the red pop.
+
+PILLAR B: TYPOGRAPHIC DUALITY
+Mix ultra-heavy, organic kanji (Kanji fonts) with tiny, sparse, uppercase English monospace tags (e.g., "REF_04X1"). Use CSS Flexbox with `flex-col` to write Japanese characters vertically. 
+
+PILLAR C: GRUNGE DECALS (Hanko & Barcodes)
+No premium design is complete without "stickers." Add red square signature stamps rotated slightly (5-12 degrees), and horizontal/vertical barcodes. It makes digital screens feel like tactile, collectible print media.
+
+PILLAR D: NEGATIVE VOID
+Don't crowd the screen. The Cyber Samurai style works because 60% of the screen is pure, empty black gradient. This is called "Chiaroscuro" in art. 
+
+--------------------------------------------------
+4. LEARNING RESOURCES FOR MODERN PREMIUM UI
+--------------------------------------------------
+If you want to master this "Awwwards-tier" interactive design style where web apps look like video games or physical posters, visit these sites:
+
+1. Awwwards (awwwards.com) - The absolute gold standard for interactive, high-end web design.
+2. Godly Website (godly.website) - The best gallery for modern, micro-interaction heavy UI.
+3. Dribbble (dribbble.com) - Search terms: "Cyberpunk UI", "Bento Grid", "Brutalist Web Design"
+4. Framer Supply (framer.supply) - Offers amazing examples of fluid physics animations and 3D scrolling effects similar to the mouse-parallax used in this Kage app.
+5. Motion for React Docs (motion.dev) - The primary engine we used for the fluid layout resizing and parallax 3D image scaling.
+
+--------------------------------------------------
+5. CORE CODE TEMPLATE (HOW TO ACHIEVE THE HERO PARALLAX)
+--------------------------------------------------
+Here is the core exact formula used in Kage V2 to make the photograph track the user's mouse and float within the layout:
+
+```tsx
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+
+export function PremiumHero({ imageSrc, isDarkTheme }) {
+  // 1. Setup smooth mouse tracking physics (The spring makes it feel heavy and premium)
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  const springConfig = { damping: 25, stiffness: 120, mass: 0.5 };
+  const smoothMouseX = useSpring(mouseX, springConfig);
+  const smoothMouseY = useSpring(mouseY, springConfig);
+  
+  // 2. Map mouse position to CSS transform rules
+  const xTransform = useTransform(smoothMouseX, [0, 1], ["-3%", "3%"]);
+  const yTransform = useTransform(smoothMouseY, [0, 1], ["-3%", "3%"]);
+  
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - left) / width;
+    const y = (e.clientY - top) / height;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  return (
+    <div 
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => { mouseX.set(0.5); mouseY.set(0.5); }}
+      className="relative w-full h-[500px] overflow-hidden"
+    >
+      <motion.img 
+        src={imageSrc} 
+        style={{ scale: 1.05, x: xTransform, y: yTransform }}
+        className={`w-full h-full object-cover ${isDarkTheme ? 'contrast-125 saturate-150' : 'brightness-105'}`}
+      />
+      {/* 3. The Fade-out Gradient Overlay to blend the image into the UI below */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black pt-20" />
+    </div>
+  );
+}
+```
+
+--------------------------------------------------
+6. HOW TO DEPLOY FOR FREE (Vercel / GitHub Pages)
+--------------------------------------------------
+1. Export the ZIP from AI Studio.
+2. Unzip it and push to a new GitHub repository.
+3. Go to vercel.com -> Create New Project -> Import from GitHub.
+4. Click Deploy. It will automatically detect the "Vite" framework and compile your live site for free.
